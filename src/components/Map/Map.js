@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import Markers from '../Marker';
-import ReactMapGL from "react-map-gl";
+import React, { useState } from 'react'
+import Markers from '../Marker'
+import ReactMapGL from "react-map-gl"
 import SpeedDial from '../../components/SpeedDial'
+import Snackbar from '@material-ui/core/Snackbar'
+import Alert from '../Alert/Alert'
 
 import './Map.css'
 
@@ -9,6 +11,7 @@ const Map = () => {
     const [markers, setMarkers] = useState([])
     const [action, setAction] = useState("")
     const [actionChosen, setActionChosen] = useState(false)
+    const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
 
     const [mapViewport, setMapViewport] = useState({
       height: "100vh",
@@ -35,7 +38,7 @@ const Map = () => {
           setActionChosen(false)
         }
       } else {
-        alert("Need to choose event type")
+        setIsSnackbarOpen(true)
       }
     }
 
@@ -48,6 +51,11 @@ const Map = () => {
     >
       <SpeedDial handleChangeAction={handleChangeAction}/>
       <Markers id="markers" markers={markers}/>
+      <Snackbar open={isSnackbarOpen} autoHideDuration={3000} onClose={() => setIsSnackbarOpen(false)}>
+        <Alert onClose={() => setIsSnackbarOpen(false)} severity="warning">
+          Please choose event type first
+        </Alert>
+      </Snackbar>
     </ReactMapGL>
   )
 };
