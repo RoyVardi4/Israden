@@ -10,36 +10,41 @@ import './Map.css'
 const Map = () => {
     const [markers, setMarkers] = useState([])
     const [action, setAction] = useState("")
-    const [actionChosen, setActionChosen] = useState(false)
     const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
+    const [isSpeedDialOpen, setIsSpeedDialOpen] = useState(false)
 
     const [mapViewport, setMapViewport] = useState({
       height: "100vh",
       width: "100wh",
       longitude: 34.798983937307526, 
       latitude: 31.99309730831267,
-      zoom: 7
+      zoom: 7,
+      maxZoom: 14
     })
 
     const handleChangeAction = (newAction) => {
-      setActionChosen(true)
       setAction(newAction)
     }
 
-    const addMarker = (e) => {
-      console.log("action: " +action)
-      console.log("Chosen: " +actionChosen)
-
+    const addMarker = (e) => { 
+      // The user didn't acutally clicked on map (layers)    
+      if(e.srcEvent.path[0].className !== "overlays") return  
+        
       if(action) {
-        if(!actionChosen) {
-          setMarkers([...markers, e.lngLat])
-          setAction("")
-        } else {
-          setActionChosen(false)
-        }
+        setMarkers([...markers, e.lngLat])
+        setAction("")
       } else {
+        // Open Alert
         setIsSnackbarOpen(true)
+
+        // Open Speed Dial
+        setIsSpeedDialOpen(true)
       }
+    }
+
+    const handleCloseAlert = () => {
+      setIsSnackbarOpen(false)
+      setIsSpeedDialOpen(false)
     }
 
   return (
@@ -49,10 +54,13 @@ const Map = () => {
                 onClick={addMarker}
                 {...mapViewport}
     >
-      <SpeedDial handleChangeAction={handleChangeAction}/>
+      <SpeedDial 
+          isSpeedDialOpen={isSpeedDialOpen} 
+          setIsSpeedDialOpen={(isOpen) => setIsSpeedDialOpen(isOpen)}
+          handleChangeAction={handleChangeAction}/>
       <Markers id="markers" markers={markers}/>
-      <Snackbar open={isSnackbarOpen} autoHideDuration={3000} onClose={() => setIsSnackbarOpen(false)}>
-        <Alert onClose={() => setIsSnackbarOpen(false)} severity="warning">
+      <Snackbar open={isSnackbarOpen} autoHideDuration={3000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity="warning">
           Please choose event type first
         </Alert>
       </Snackbar>

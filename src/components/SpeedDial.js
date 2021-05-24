@@ -4,7 +4,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction'
-import EditIcon from '@material-ui/icons/Edit';
 import {GiPistolGun, GiMedicines} from 'react-icons/gi'
 
 const useStyles = makeStyles((theme) => ({
@@ -22,14 +21,16 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export default function OpenIconSpeedDial({handleChangeAction}) {
+export default function OpenIconSpeedDial({handleChangeAction, isSpeedDialOpen, setIsSpeedDialOpen}) {
   const classes = useStyles()
-  const [open, setOpen] = React.useState(false)
-  const [hidden, setHidden] = React.useState(false)
+  // const [open, setOpen] = useState(false)
+  // const [hidden, setHidden] = useState(false)
+
+  const [open, setOpen] = [isSpeedDialOpen, setIsSpeedDialOpen]
 
   const handleClick = (Action) => {
     handleChangeAction(Action)
-    handleClose()
+    // handleClose()
   }
 
   const actions = [
@@ -54,7 +55,7 @@ export default function OpenIconSpeedDial({handleChangeAction}) {
       <SpeedDial
         ariaLabel="SpeedDial openIcon example"
         className={classes.speedDial}
-        hidden={hidden}
+        // hidden={hidden}
         icon={<SpeedDialIcon />}
         onClose={handleClose}
         onOpen={handleOpen}

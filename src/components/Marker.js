@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles'
 import MuiDialogTitle from '@material-ui/core/DialogTitle'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
-import React, { Fragment, useEffect, useState } from "react"
+import React, { Fragment, useState } from "react"
 import { Marker, Popup } from "react-map-gl"
 
 const styles = (theme) => ({
@@ -51,6 +51,7 @@ const Markers = ({markers}) => {
                     >
                         <img 
                             src="https://img.icons8.com/color/48/000000/marker.png"
+                            alt="marker"
                             onClick={() => setMarkerIdPopup(index)}
                         />
                     </Marker>
@@ -64,7 +65,7 @@ const Markers = ({markers}) => {
                             longitude={marker[0]}
                         >
                             <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-                                <Typography variant="h6">Marker number {markerIdPopup}</Typography>
+                                <Typography variant="subtitle1">Marker number {markerIdPopup}</Typography>
                             </DialogTitle>
                         </Popup> :
                         null
