@@ -1,30 +1,23 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-// import Button from '@material-ui/core/Button';
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction'
 import {GiPistolGun, GiMedicines} from 'react-icons/gi'
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    // height: 380,
-    // transform: 'translateZ(0px)',
-    // flexGrow: 1,
-  },
   speedDial: {
     position: 'absolute',
     top: theme.spacing(4),
     right: theme.spacing(4),
   },
-}));
-
-
+  action: {
+    backgroundColor: "red"
+  }
+}))
 
 export default function OpenIconSpeedDial({handleChangeAction, isSpeedDialOpen, setIsSpeedDialOpen}) {
   const classes = useStyles()
-  // const [open, setOpen] = useState(false)
-  // const [hidden, setHidden] = useState(false)
 
   const [open, setOpen] = [isSpeedDialOpen, setIsSpeedDialOpen]
 
@@ -36,12 +29,7 @@ export default function OpenIconSpeedDial({handleChangeAction, isSpeedDialOpen, 
   const actions = [
     { icon: <GiPistolGun size={30}/>, name: 'Guns', eventHandler: () => handleClick("Guns") },
     { icon: <GiMedicines size={30} />, name: 'Drugs', eventHandler: () => handleClick("Drugs") },
-  ];
-
-  // const handleVisibility = () => {
-  //   setHidden((prevHidden) => !prevHidden);
-  // };
-
+  ]
   const handleOpen = () => {
     setOpen(true);
   };
@@ -51,11 +39,9 @@ export default function OpenIconSpeedDial({handleChangeAction, isSpeedDialOpen, 
   };
 
   return (
-    <div className={classes.root}>
       <SpeedDial
-        ariaLabel="SpeedDial openIcon example"
+        ariaLabel="Event SpeedDial"
         className={classes.speedDial}
-        // hidden={hidden}
         icon={<SpeedDialIcon />}
         onClose={handleClose}
         onOpen={handleOpen}
@@ -64,6 +50,7 @@ export default function OpenIconSpeedDial({handleChangeAction, isSpeedDialOpen, 
       >
         {actions.map((action) => (
           <SpeedDialAction
+            className={classes.action}
             key={action.name}
             icon={action.icon}
             tooltipTitle={action.name}
@@ -71,6 +58,5 @@ export default function OpenIconSpeedDial({handleChangeAction, isSpeedDialOpen, 
           />
         ))}
       </SpeedDial>
-    </div>
   );
 }

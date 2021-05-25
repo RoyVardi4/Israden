@@ -59,7 +59,7 @@ const Map = () => {
           setIsSpeedDialOpen={(isOpen) => setIsSpeedDialOpen(isOpen)}
           handleChangeAction={handleChangeAction}/>
       <Markers id="markers" markers={markers}/>
-      <Snackbar open={isSnackbarOpen} autoHideDuration={3000} onClose={handleCloseAlert}>
+      <Snackbar anchorOrigin={{vertical: "top", horizontal: "center"}} open={isSnackbarOpen} autoHideDuration={3000} onClose={handleCloseAlert}>
         <Alert onClose={handleCloseAlert} severity="warning">
           Please choose event type first
         </Alert>
