@@ -1,40 +1,20 @@
-import { Typography } from "@material-ui/core"
-import { withStyles } from '@material-ui/core/styles'
-import MuiDialogTitle from '@material-ui/core/DialogTitle'
+import React, { Fragment, useState } from "react"
+import { makeStyles } from '@material-ui/core/styles'
+import { Marker, Popup } from "react-map-gl"
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
-import React, { Fragment, useState } from "react"
-import { Marker, Popup } from "react-map-gl"
+import Card from '@material-ui/core/Card'
+import CardHeader from '@material-ui/core/CardHeader'
 
-const styles = (theme) => ({
-    root: {
-      margin: 0,
-      padding: theme.spacing(2),
-    },
-    closeButton: {
-      position: 'absolute',
-      right: theme.spacing(2),
-      top: theme.spacing(1),
-      color: theme.palette.grey[750],
-    },
-  })
-  
-  const DialogTitle = withStyles(styles)((props) => {
-    const { children, classes, onClose, ...other } = props
-    return (
-      <MuiDialogTitle disableTypography className={classes.root} {...other}>
-        <Typography variant="h6">{children}</Typography>
-        {onClose ? (
-          <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-            <CloseIcon />
-          </IconButton>
-        ) : null}
-      </MuiDialogTitle>
-    )
-  })
-  
+const useStyles = makeStyles(() => ({
+  root: {
+    maxWidth: 1000,
+    // maxHeight: 100
+  },
+}))
 
 const Markers = ({markers}) => {
+    const classes = useStyles()
     const [markerIdPopup, setMarkerIdPopup] = useState()
 
     const handleClose = () => setMarkerIdPopup(null)
@@ -46,8 +26,8 @@ const Markers = ({markers}) => {
                     <Marker
                         offsetTop={-48}
                         offsetLeft={-24}
-                        latitude={marker[1]}
-                        longitude={marker[0]}
+                        latitude={marker.lngLat[1]}
+                        longitude={marker.lngLat[0]}
                     >
                         <img 
                             src="https://img.icons8.com/color/48/000000/marker.png"
@@ -57,16 +37,24 @@ const Markers = ({markers}) => {
                     </Marker>
                     {   markerIdPopup === index ?
                         <Popup
-                            styles="absolute"
                             closeButton={false}
                             offsetTop={-48}
                             offsetLeft={0}
-                            latitude={marker[1]}
-                            longitude={marker[0]}
+                            latitude={marker.lngLat[1]}
+                            longitude={marker.lngLat[0]}
                         >
-                            <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-                                <Typography variant="subtitle1">Marker number {markerIdPopup}</Typography>
-                            </DialogTitle>
+                          <Card elevation={6} className={classes.root}>
+                            <CardHeader
+                              action={
+                                <IconButton onClick={handleClose} aria-label="settings">
+                                  <CloseIcon/>
+                                </IconButton>
+                              }
+                              subheader={marker.type}
+                              // title={marker.type}
+                              // subheader="September 14, 2016"
+                            />
+                          </Card>
                         </Popup> :
                         null
                     }
