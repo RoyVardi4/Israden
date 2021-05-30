@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
+import EditIcon from '@material-ui/icons/Edit'
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction'
 import {GiPistolGun, GiMedicines} from 'react-icons/gi'
 
@@ -29,6 +30,8 @@ export default function OpenIconSpeedDial({handleChangeAction, isSpeedDialOpen, 
   const actions = [
     { icon: <GiPistolGun size={30}/>, name: 'Guns', eventHandler: () => handleClick("Guns") },
     { icon: <GiMedicines size={30} />, name: 'Drugs', eventHandler: () => handleClick("Drugs") },
+    { icon: <EditIcon size={30} />, name: 'Add Layer', eventHandler: () => handleClick("Layer")},
+
   ]
   const handleOpen = () => {
     setOpen(true);
