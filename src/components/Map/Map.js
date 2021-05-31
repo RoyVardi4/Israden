@@ -35,7 +35,8 @@ const Map = () => {
         case "Layer": 
           setMode(new DrawPolygonMode())
           break
-        case "Guns":     
+        case "Guns":
+        case "Drugs":     
           setMode(new DrawPointMode())
           break
         default: break
@@ -47,9 +48,10 @@ const Map = () => {
     //   setIsSpeedDialOpen(false)
     // }
 
-    const onSelect = useCallback(options => {
-      setSelectedFeatureIndex(options && options.selectedFeatureIndex);
-    }, []);
+    const onSelect = (options) => {
+      if (mode.constructor.name === "DrawPointMode") return   
+      setSelectedFeatureIndex(options && options.selectedFeatureIndex) 
+    }
 
     const onDelete = useCallback(() => {
       if (selectedFeatureIndex !== null && selectedFeatureIndex >= 0) {
@@ -60,25 +62,21 @@ const Map = () => {
     const onUpdate = (e) => {
       const {editType, data} = e
 
-      switch (action) {
-        case "Layer": 
-          break
-        case "Guns":     
-          const newMarkers = data.map((feature) => {
-            return {
-              type: action,
-              lngLat: feature.geometry.coordinates
-            }
-          })   
-          setMarkers(newMarkers)
-          setAction("")
-          break
-        default:
-          break
+      if(action === "Guns" || action === "Drugs") {
+        // add new Marker to markers list
+        const newMarkers = [
+          ...markers,
+          {
+            type: action,
+            lngLat: data[data.length - 1].geometry.coordinates
+          }
+        ]  
+        setMarkers(newMarkers)
+        setAction("")
       }
       
       if (editType === 'addFeature') {
-        setMode(new EditingMode());
+        setMode(new EditingMode())
       }
     }
 
@@ -120,7 +118,7 @@ const Map = () => {
       </ReactMapGL>
       {
         selectedFeatureIndex !== null && selectedFeatureIndex >= 0 ? 
-        <ControlPanel deletePoly={onDelete} polygon={selectedFeature} /> 
+        <ControlPanel deletePoly={onDelete} poly={selectedFeature} /> 
         :
         null
       }

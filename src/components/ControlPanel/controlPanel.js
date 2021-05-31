@@ -3,7 +3,7 @@ import area from '@turf/area'
 import './controlPanel.css'
 
 const ControlPanel = ({poly, deletePoly}) => {
-  const polygon = poly;
+  const polygon = poly
   const polygonArea = polygon && area(polygon);
   return (
     <div className="control-panel">
