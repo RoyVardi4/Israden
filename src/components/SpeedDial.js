@@ -24,7 +24,7 @@ export default function OpenIconSpeedDial({handleChangeAction, isSpeedDialOpen, 
 
   const handleClick = (Action) => {
     handleChangeAction(Action)
-    // handleClose()
+    handleClose()
   }
 
   const actions = [

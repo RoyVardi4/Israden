@@ -19,6 +19,7 @@ const Markers = ({markers}) => {
 
     const handleClose = () => setMarkerIdPopup(null)
 
+    console.log(markers)
     return (
         <Fragment>
         {markers.map((marker, index) => (
@@ -51,8 +52,6 @@ const Markers = ({markers}) => {
                                 </IconButton>
                               }
                               subheader={marker.type}
-                              // title={marker.type}
-                              // subheader="September 14, 2016"
                             />
                           </Card>
                         </Popup> :

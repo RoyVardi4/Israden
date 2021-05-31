@@ -1,20 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useCallback } from 'react'
 import Markers from '../Marker'
-import ReactMapGL, {Source, Layer} from "react-map-gl"
+import ReactMapGL from "react-map-gl"
 import SpeedDial from '../../components/SpeedDial'
-import Snackbar from '@material-ui/core/Snackbar'
-import Alert from '../Alert/Alert'
+// import Snackbar from '@material-ui/core/Snackbar'
+// import Alert from '../Alert/Alert'
+
+import {Editor, DrawPolygonMode, EditingMode, DrawPointMode} from 'react-map-gl-draw'
+import {getFeatureStyle, getEditHandleStyle} from './style'
+import ControlPanel from '../ControlPanel/controlPanel'
 
 import './Map.css'
 
 const Map = () => {
     const [markers, setMarkers] = useState([])
     const [action, setAction] = useState("")
-    const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
+    // const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
     const [isSpeedDialOpen, setIsSpeedDialOpen] = useState(false)
-    
-    const [layerCount, setLayerCount] = useState(5)
-    const [layerPoints, setLayerPoint] = useState([])
+    const [mode, setMode] = useState(null)
+    const [selectedFeatureIndex, setSelectedFeatureIndex] = useState(null)
+    const editorRef = useRef(null)
 
     const [mapViewport, setMapViewport] = useState({
       height: "100vh",
@@ -27,106 +31,101 @@ const Map = () => {
 
     const handleChangeAction = (newAction) => {
       setAction(newAction)
-    }
-    
-    const addMarker = (e) => { 
-      // The user didn't acutally clicked on map (layers)    
-      if(e.srcEvent.path[0].className !== "overlays") return  
-      
-      if(action === "Layer") {
-        setLayerCount((prevState) => --prevState)
-        
-        // insert also first point as last point to close the polygon on last click
-        if(layerCount === 0) {
-          setLayerPoint([
-            ...layerPoints, 
-            e.lngLat,
-            layerPoints[0]
-          ])
-          setAction("")
-        } else {
-          setLayerPoint([
-            ...layerPoints, 
-            e.lngLat
-          ])
-        }
-        return
-      } 
-      
-      if(action) {
-        const newMaker = {
-          lngLat: e.lngLat,
-          type: action
-        }   
-        setMarkers([...markers, newMaker])
-        setAction("")
-      } else {
-        // Open Alert
-        setIsSnackbarOpen(true)
-
-        // Open Speed Dial
-        setIsSpeedDialOpen(true)
+      switch (newAction) {
+        case "Layer": 
+          setMode(new DrawPolygonMode())
+          break
+        case "Guns":     
+          setMode(new DrawPointMode())
+          break
+        default: break
       }
     }
 
-    const handleCloseAlert = () => {
-      setIsSnackbarOpen(false)
-      setIsSpeedDialOpen(false)
+    // const handleCloseAlert = () => {
+    //   setIsSnackbarOpen(false)
+    //   setIsSpeedDialOpen(false)
+    // }
+
+    const onSelect = useCallback(options => {
+      setSelectedFeatureIndex(options && options.selectedFeatureIndex);
+    }, []);
+
+    const onDelete = useCallback(() => {
+      if (selectedFeatureIndex !== null && selectedFeatureIndex >= 0) {
+        editorRef.current.deleteFeatures(selectedFeatureIndex);
+      }
+    }, [selectedFeatureIndex]);
+
+    const onUpdate = (e) => {
+      const {editType, data} = e
+
+      switch (action) {
+        case "Layer": 
+          break
+        case "Guns":     
+          const newMarkers = data.map((feature) => {
+            return {
+              type: action,
+              lngLat: feature.geometry.coordinates
+            }
+          })   
+          setMarkers(newMarkers)
+          setAction("")
+          break
+        default:
+          break
+      }
+      
+      if (editType === 'addFeature') {
+        setMode(new EditingMode());
+      }
     }
 
+    const drawTools = (
+      <SpeedDial isSpeedDialOpen={isSpeedDialOpen} 
+                 setIsSpeedDialOpen={(isOpen) => setIsSpeedDialOpen(isOpen)}
+                 handleChangeAction={handleChangeAction}/>
+    )
+
+    const features = editorRef.current && editorRef.current.getFeatures()
+    const selectedFeature =
+      features && (features[selectedFeatureIndex] || features[features.length - 1])
 
   return (
-    <ReactMapGL mapboxApiAccessToken="pk.eyJ1Ijoicm95dmFyZGk0IiwiYSI6ImNraWRqYWVvYzA1dmgyc282YTg0aW16NGkifQ.7jEGmT-pezL7_nbkY186Dw"
-                mapStyle='mapbox://styles/mapbox/satellite-streets-v11'      
-                onViewportChange={setMapViewport} 
-                onClick={addMarker}
-                {...mapViewport}
-    >
-      <Source
-        id="orgonjson"
-        type="geojson"
-        data={
-          {
-            'type': 'Feature',
-            'geometry': {
-            'type': 'Polygon',
-            'coordinates': [
-                // [
-                  layerPoints
-                  // [35.391929, 30.870275],
-                  // [35.227490, 30.879548],
-                  // [35.242942, 30.713106],
-                  // [35.344224, 30.715841],
-                  // [35.371389, 30.788716],
-                  // [35.391929, 30.870275], 
-                // ]
-              ]
-            }
-          }
-        }
-      />
-      <Layer
-        id="anything"
-        type="fill"
-        source="orgonjson"
-        paint={{
-          "fill-color": "red",
-          "fill-opacity": 0.3
-          // "line-width" : 2
-        }} 
-      />
-      <SpeedDial 
-          isSpeedDialOpen={isSpeedDialOpen} 
-          setIsSpeedDialOpen={(isOpen) => setIsSpeedDialOpen(isOpen)}
-          handleChangeAction={handleChangeAction}/>
-      <Markers id="markers" markers={markers}/>
-      <Snackbar anchorOrigin={{vertical: "top", horizontal: "center"}} open={isSnackbarOpen} autoHideDuration={3000} onClose={handleCloseAlert}>
-        <Alert onClose={handleCloseAlert} severity="warning">
-          Please choose event type first
-        </Alert>
-      </Snackbar>
-    </ReactMapGL>
+    <div>
+      <ReactMapGL mapboxApiAccessToken="pk.eyJ1Ijoicm95dmFyZGk0IiwiYSI6ImNraWRqYWVvYzA1dmgyc282YTg0aW16NGkifQ.7jEGmT-pezL7_nbkY186Dw"
+                  mapStyle='mapbox://styles/mapbox/satellite-streets-v11'      
+                  onViewportChange={setMapViewport} 
+                  {...mapViewport}
+      >
+        <Editor
+            ref={editorRef}
+            style={{width: '100%', height: '100%'}}
+            clickRadius={12}
+            mode={mode}
+            onSelect={onSelect}
+            onUpdate={onUpdate}
+            editHandleShape={'circle'}
+            featureStyle={getFeatureStyle}
+            editHandleStyle={getEditHandleStyle}
+        />
+        {drawTools}
+        <Markers id="markers" markers={markers}/>
+        {/* <Snackbar anchorOrigin={{vertical: "top", horizontal: "center"}} open={isSnackbarOpen} autoHideDuration={3000} onClose={handleCloseAlert}>
+          <Alert onClose={handleCloseAlert} severity="warning">
+            Please choose event type first
+          </Alert>
+        </Snackbar> */}
+      </ReactMapGL>
+      {
+        selectedFeatureIndex !== null && selectedFeatureIndex >= 0 ? 
+        <ControlPanel deletePoly={onDelete} polygon={selectedFeature} /> 
+        :
+        null
+      }
+    </div>
   )
-};
+}
 
 export default Map
