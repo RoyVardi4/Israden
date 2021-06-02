@@ -5,7 +5,7 @@ import SpeedDial from '../../components/SpeedDial'
 // import Snackbar from '@material-ui/core/Snackbar'
 // import Alert from '../Alert/Alert'
 
-import {Editor, DrawPolygonMode, EditingMode, DrawPointMode} from 'react-map-gl-draw'
+import {Editor, DrawPolygonMode, EditingMode, DrawPointMode, DrawLineStringMode} from 'react-map-gl-draw'
 import {getFeatureStyle, getEditHandleStyle} from './style'
 import ControlPanel from '../ControlPanel/controlPanel'
 
@@ -26,12 +26,15 @@ const Map = () => {
       longitude: 34.798983937307526, 
       latitude: 31.99309730831267,
       zoom: 7,
-      maxZoom: 14
+      maxZoom: 141
     })
 
     const handleChangeAction = (newAction) => {
       setAction(newAction)
       switch (newAction) {
+        case "EditLayer":
+          setMode(new EditingMode())
+          break
         case "Layer": 
           setMode(new DrawPolygonMode())
           break
@@ -49,6 +52,7 @@ const Map = () => {
     // }
 
     const onSelect = (options) => {
+      console.log(mode.constructor.name)
       if (mode.constructor.name === "DrawPointMode") return   
       setSelectedFeatureIndex(options && options.selectedFeatureIndex) 
     }
@@ -76,7 +80,7 @@ const Map = () => {
       }
       
       if (editType === 'addFeature') {
-        setMode(new EditingMode())
+        setMode(null)
       }
     }
 

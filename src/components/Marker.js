@@ -5,10 +5,11 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import Card from '@material-ui/core/Card'
 import CardHeader from '@material-ui/core/CardHeader'
-import MarkerIcon from '@material-ui/icons/Room'
 
 const useStyles = makeStyles(() => ({
   root: {
+    // backgroundcolor: "red",
+    position: "relative",
     maxWidth: 1000,
     // maxHeight: 100
   },
