@@ -52,14 +52,14 @@ const Map = () => {
     // }
 
     const onSelect = (options) => {
-      console.log(mode.constructor.name)
       if (mode.constructor.name === "DrawPointMode") return   
       setSelectedFeatureIndex(options && options.selectedFeatureIndex) 
     }
 
     const onDelete = useCallback(() => {
       if (selectedFeatureIndex !== null && selectedFeatureIndex >= 0) {
-        editorRef.current.deleteFeatures(selectedFeatureIndex);
+        editorRef.current.deleteFeatures(selectedFeatureIndex)
+        setSelectedFeatureIndex(null)
       }
     }, [selectedFeatureIndex]);
 
