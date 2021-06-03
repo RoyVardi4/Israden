@@ -1,9 +1,9 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react'
 import Markers from '../Marker'
-import ReactMapGL from "react-map-gl"
+import ReactMapGL, {FlyToInterpolator} from "react-map-gl"
 import SpeedDial from '../../components/SpeedDial'
-// import Snackbar from '@material-ui/core/Snackbar'
-// import Alert from '../Alert/Alert'
+import Snackbar from '@material-ui/core/Snackbar'
+import Alert from '../Alert/Alert'
 
 import {Editor, DrawPolygonMode, EditingMode, DrawPointMode} from 'react-map-gl-draw'
 import {getFeatureStyle, getEditHandleStyle} from './style'
@@ -28,10 +28,11 @@ const Map = () => {
       longitude: 34.798983937307526, 
       latitude: 31.99309730831267,
       zoom: 7,
-      maxZoom: 141
+      maxZoom: 14
     })
 
-    const [listening, setListening] = useState(false);
+    const [isNewFeature, setIsNewFeature] = useState(false)
+    const [listening, setListening] = useState(false)
 
     useEffect(() => {
       if (!listening) {
@@ -41,6 +42,8 @@ const Map = () => {
           const parsedData = JSON.parse(event.data);
           if(parsedData.type) {
             setMarkers(prevMarkers => [...prevMarkers, parsedData])
+            setIsNewFeature(true)
+            moveToEvent(parsedData.lngLat)
           }
         }
   
@@ -65,10 +68,9 @@ const Map = () => {
       }
     }
 
-    // const handleCloseAlert = () => {
-    //   setIsSnackbarOpen(false)
-    //   setIsSpeedDialOpen(false)
-    // }
+    const handleCloseAlert = () => {
+      setIsNewFeature(false)
+    }
 
     const onSelect = (options) => {
       if (mode.constructor.name === "DrawPointMode") return   
@@ -97,6 +99,20 @@ const Map = () => {
       if (editType === 'addFeature') {
         setMode(null)
       }
+    }
+
+    const moveToEvent = (lngLat) => {
+      const [lng, lat] = lngLat
+      setMapViewport({
+        height: "100vh",
+        width: "100wh",
+        longitude: lng, 
+        latitude: lat,
+        zoom: 12,
+        maxZoom: 14,
+        transitionInterpolator: new FlyToInterpolator({speed: 1.2}),
+        transitionDuration: 'auto'
+      })
     }
 
     const drawTools = (
@@ -129,11 +145,11 @@ const Map = () => {
         />
         {drawTools}
         <Markers id="markers" markers={markers}/>
-        {/* <Snackbar anchorOrigin={{vertical: "top", horizontal: "center"}} open={isSnackbarOpen} autoHideDuration={3000} onClose={handleCloseAlert}>
-          <Alert onClose={handleCloseAlert} severity="warning">
-            Please choose event type first
+        <Snackbar anchorOrigin={{vertical: "top", horizontal: "center"}} open={isNewFeature} autoHideDuration={3000} onClose={handleCloseAlert}>
+          <Alert onClose={handleCloseAlert} severity="success">
+            New Feature!
           </Alert>
-        </Snackbar> */}
+        </Snackbar>
       </ReactMapGL>
       {
         selectedFeatureIndex !== null && selectedFeatureIndex >= 0 ? 
