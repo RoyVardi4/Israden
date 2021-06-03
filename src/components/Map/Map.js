@@ -1,13 +1,15 @@
-import React, { useState, useRef, useCallback } from 'react'
+import React, { useState, useRef, useCallback, useEffect } from 'react'
 import Markers from '../Marker'
 import ReactMapGL from "react-map-gl"
 import SpeedDial from '../../components/SpeedDial'
 // import Snackbar from '@material-ui/core/Snackbar'
 // import Alert from '../Alert/Alert'
 
-import {Editor, DrawPolygonMode, EditingMode, DrawPointMode, DrawLineStringMode} from 'react-map-gl-draw'
+import {Editor, DrawPolygonMode, EditingMode, DrawPointMode} from 'react-map-gl-draw'
 import {getFeatureStyle, getEditHandleStyle} from './style'
 import ControlPanel from '../ControlPanel/controlPanel'
+
+import ServerAPI from '../../ServerAPI'
 
 import './Map.css'
 
@@ -28,6 +30,23 @@ const Map = () => {
       zoom: 7,
       maxZoom: 141
     })
+
+    const [listening, setListening] = useState(false);
+
+    useEffect(() => {
+      if (!listening) {
+        const events = new EventSource('http://localhost:5000/marker/events');
+
+        events.onmessage = (event) => {
+          const parsedData = JSON.parse(event.data);
+          if(parsedData.type) {
+            setMarkers(prevMarkers => [...prevMarkers, parsedData])
+          }
+        }
+  
+        setListening(true);
+      }
+    }, [listening, markers]);
 
     const handleChangeAction = (newAction) => {
       setAction(newAction)
@@ -68,14 +87,10 @@ const Map = () => {
 
       if(action === "Guns" || action === "Drugs") {
         // add new Marker to markers list
-        const newMarkers = [
-          ...markers,
-          {
-            type: action,
-            lngLat: data[data.length - 1].geometry.coordinates
-          }
-        ]  
-        setMarkers(newMarkers)
+        ServerAPI.addMarker({
+          type: action,
+          lngLat: data[data.length - 1].geometry.coordinates
+        })  
         setAction("")
       }
       
