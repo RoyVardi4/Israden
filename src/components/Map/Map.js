@@ -13,7 +13,40 @@ import ServerAPI from '../../ServerAPI'
 
 import './Map.css'
 
+
+////
+import { makeStyles } from '@material-ui/core/styles';
+import Drawer from '@material-ui/core/Drawer';
+import List from '@material-ui/core/List';
+import Divider from '@material-ui/core/Divider';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText'
+import ListSubheader from '@material-ui/core/ListSubheader';
+import {GiPistolGun, GiMedicines} from 'react-icons/gi'
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+  },
+  drawer: {
+    width: 240,
+    flexShrink: 0,
+  },
+  drawerPaper: {
+    width: 240,
+    boxShadow: 5
+  },
+  content: {
+    flexGrow: 1,
+    backgroundColor: theme.palette.background.default,
+    padding: theme.spacing(3),
+  },
+}))
+
 const Map = () => {
+  const classes = useStyles()
+
     const [markers, setMarkers] = useState([])
     const [action, setAction] = useState("")
     // const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
@@ -28,7 +61,7 @@ const Map = () => {
       longitude: 34.798983937307526, 
       latitude: 31.99309730831267,
       zoom: 7,
-      maxZoom: 14
+      maxZoom: 18
     })
 
     const [isNewFeature, setIsNewFeature] = useState(false)
@@ -43,11 +76,14 @@ const Map = () => {
           if(parsedData.type) {
             setMarkers(prevMarkers => [...prevMarkers, parsedData])
             setIsNewFeature(true)
-            moveToEvent(parsedData.lngLat)
           }
         }
-  
-        setListening(true);
+        const getData = async () => {
+          const data = await ServerAPI.getAllMarkers()
+          setMarkers(prevMarkers => [...prevMarkers, ...data])
+        }
+        getData()
+        setListening(true)
       }
     }, [listening, markers]);
 
@@ -108,8 +144,8 @@ const Map = () => {
         width: "100wh",
         longitude: lng, 
         latitude: lat,
-        zoom: 12,
-        maxZoom: 14,
+        zoom: 14,
+        maxZoom: 18,
         transitionInterpolator: new FlyToInterpolator({speed: 1.2}),
         transitionDuration: 'auto'
       })
@@ -125,8 +161,39 @@ const Map = () => {
     const selectedFeature =
       features && (features[selectedFeatureIndex] || features[features.length - 1])
 
+
+      const ddrawer = (
+        <Drawer
+          className={classes.drawer}
+          variant="permanent"
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+          anchor="left"
+        >
+          <Divider />
+          <List subheader={<ListSubheader>Last events</ListSubheader>}>
+            {markers.map((marker, index) => (
+              <ListItem button onClick={() => moveToEvent(marker.lngLat)} key={marker.type}>
+                <ListItemIcon>{marker.type === "Guns" ? 
+                              <GiPistolGun size={25}/> : 
+                              <GiMedicines size={25}/>}
+                </ListItemIcon>
+                <ListItemText 
+                  primary={marker.type} 
+                  secondary={`${new Date(marker.date).toLocaleDateString("he-IL")}
+                              ${new Date(marker.date).toLocaleTimeString("he-IL")}`}
+                />
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+        </Drawer>
+      )
+
   return (
     <div>
+      {ddrawer}
       <ReactMapGL mapboxApiAccessToken="pk.eyJ1Ijoicm95dmFyZGk0IiwiYSI6ImNraWRqYWVvYzA1dmgyc282YTg0aW16NGkifQ.7jEGmT-pezL7_nbkY186Dw"
                   mapStyle='mapbox://styles/mapbox/satellite-streets-v11'      
                   onViewportChange={setMapViewport} 
@@ -146,8 +213,8 @@ const Map = () => {
         {drawTools}
         <Markers id="markers" markers={markers}/>
         <Snackbar anchorOrigin={{vertical: "top", horizontal: "center"}} open={isNewFeature} autoHideDuration={3000} onClose={handleCloseAlert}>
-          <Alert onClose={handleCloseAlert} severity="success">
-            New Feature!
+          <Alert onClose={handleCloseAlert} severity="error">
+            שים לב! אירוע חדש נוסף
           </Alert>
         </Snackbar>
       </ReactMapGL>

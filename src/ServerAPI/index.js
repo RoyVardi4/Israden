@@ -7,4 +7,9 @@ export default class ServerAPI {
         await axios.post(URL+"/marker", newMarker)
                 // .then(res => alert(res.data))
     }
+
+    static async getAllMarkers() {
+        return await axios.get(URL+"/marker")
+                .then(res => res.data)
+    }
 }
