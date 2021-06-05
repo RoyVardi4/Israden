@@ -47,7 +47,7 @@ export function getFeatureStyle({feature, index, state}) {
     default:
       style = {
         stroke: 'rgb(60, 178, 208)',
-        strokeWidth: 2,
+        strokeWidth: 3,
         fill: 'rgb(60, 178, 208)',
         fillOpacity: 0
       }

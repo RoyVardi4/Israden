@@ -49,7 +49,6 @@ const Map = () => {
 
     const [markers, setMarkers] = useState([])
     const [action, setAction] = useState("")
-    // const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
     const [isSpeedDialOpen, setIsSpeedDialOpen] = useState(false)
     const [mode, setMode] = useState(null)
     const [selectedFeatureIndex, setSelectedFeatureIndex] = useState(null)
@@ -61,10 +60,12 @@ const Map = () => {
       longitude: 34.798983937307526, 
       latitude: 31.99309730831267,
       zoom: 7,
-      maxZoom: 18
+      maxZoom: 18,
+      minZoom: 5
     })
 
     const [isNewFeature, setIsNewFeature] = useState(false)
+    const [isMeAddedFeature, setIsMeAddedFeature] = useState(false)
     const [listening, setListening] = useState(false)
 
     useEffect(() => {
@@ -75,17 +76,24 @@ const Map = () => {
           const parsedData = JSON.parse(event.data);
           if(parsedData.type) {
             setMarkers(prevMarkers => [...prevMarkers, parsedData])
-            setIsNewFeature(true)
+            setIsMeAddedFeature(prevStatus => {
+              if(!prevStatus) setIsNewFeature(true)
+              return false
+            })
+            // isMeAddedFeature ? setIsMeAddedFeature(false) : setIsNewFeature(true)
           }
         }
+
         const getData = async () => {
           const data = await ServerAPI.getAllMarkers()
           setMarkers(prevMarkers => [...prevMarkers, ...data])
+          const dataLayers = await ServerAPI.getAllLayers()
+          editorRef.current.addFeatures(dataLayers)
         }
         getData()
         setListening(true)
       }
-    }, [listening, markers]);
+    }, [listening, markers, isMeAddedFeature]);
 
     const handleChangeAction = (newAction) => {
       setAction(newAction)
@@ -129,10 +137,14 @@ const Map = () => {
           type: action,
           lngLat: data[data.length - 1].geometry.coordinates
         })  
+        setIsMeAddedFeature(true)
         setAction("")
       }
       
       if (editType === 'addFeature') {
+        if(action === "Layer") {
+          ServerAPI.addLayer(data[data.length - 1])
+        }
         setMode(null)
       }
     }
@@ -161,7 +173,6 @@ const Map = () => {
     const selectedFeature =
       features && (features[selectedFeatureIndex] || features[features.length - 1])
 
-
       const ddrawer = (
         <Drawer
           className={classes.drawer}
@@ -174,7 +185,7 @@ const Map = () => {
           <Divider />
           <List subheader={<ListSubheader>Last events</ListSubheader>}>
             {markers.map((marker, index) => (
-              <ListItem button onClick={() => moveToEvent(marker.lngLat)} key={marker.type}>
+              <ListItem button onClick={() => moveToEvent(marker.lngLat)} key={index}>
                 <ListItemIcon>{marker.type === "Guns" ? 
                               <GiPistolGun size={25}/> : 
                               <GiMedicines size={25}/>}
