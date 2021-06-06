@@ -4,6 +4,7 @@ import ReactMapGL, {FlyToInterpolator} from "react-map-gl"
 import SpeedDial from '../../components/SpeedDial'
 import Snackbar from '@material-ui/core/Snackbar'
 import Alert from '../Alert/Alert'
+import Grid from '@material-ui/core/Grid'
 
 import {Editor, DrawPolygonMode, EditingMode, DrawPointMode} from 'react-map-gl-draw'
 import {getFeatureStyle, getEditHandleStyle} from './style'
@@ -13,9 +14,6 @@ import ServerAPI from '../../ServerAPI'
 
 import './Map.css'
 
-
-////
-import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
@@ -25,28 +23,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import ListSubheader from '@material-ui/core/ListSubheader';
 import {GiPistolGun, GiMedicines} from 'react-icons/gi'
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-  },
-  drawer: {
-    width: 240,
-    flexShrink: 0,
-  },
-  drawerPaper: {
-    width: 240,
-    boxShadow: 5
-  },
-  content: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.default,
-    padding: theme.spacing(3),
-  },
-}))
-
 const Map = () => {
-  const classes = useStyles()
-
     const [markers, setMarkers] = useState([])
     const [action, setAction] = useState("")
     const [isSpeedDialOpen, setIsSpeedDialOpen] = useState(false)
@@ -80,7 +57,6 @@ const Map = () => {
               if(!prevStatus) setIsNewFeature(true)
               return false
             })
-            // isMeAddedFeature ? setIsMeAddedFeature(false) : setIsNewFeature(true)
           }
         }
 
@@ -175,12 +151,7 @@ const Map = () => {
 
       const ddrawer = (
         <Drawer
-          className={classes.drawer}
           variant="permanent"
-          classes={{
-            paper: classes.drawerPaper,
-          }}
-          anchor="left"
         >
           <Divider />
           <List subheader={<ListSubheader>Last events</ListSubheader>}>
@@ -203,39 +174,47 @@ const Map = () => {
       )
 
   return (
-    <div>
-      {ddrawer}
-      <ReactMapGL mapboxApiAccessToken="pk.eyJ1Ijoicm95dmFyZGk0IiwiYSI6ImNraWRqYWVvYzA1dmgyc282YTg0aW16NGkifQ.7jEGmT-pezL7_nbkY186Dw"
-                  mapStyle='mapbox://styles/mapbox/satellite-streets-v11'      
-                  onViewportChange={setMapViewport} 
-                  {...mapViewport}
+      <Grid container
+            direction="row"
+            justify="flex-start"
+            alignItems="flex-start"
       >
-        <Editor
-            ref={editorRef}
-            style={{width: '100%', height: '100%'}}
-            clickRadius={12}
-            mode={mode}
-            onSelect={onSelect}
-            onUpdate={onUpdate}
-            editHandleShape={'circle'}
-            featureStyle={getFeatureStyle}
-            editHandleStyle={getEditHandleStyle}
-        />
-        {drawTools}
-        <Markers id="markers" markers={markers}/>
-        <Snackbar anchorOrigin={{vertical: "top", horizontal: "center"}} open={isNewFeature} autoHideDuration={3000} onClose={handleCloseAlert}>
-          <Alert onClose={handleCloseAlert} severity="error">
-            שים לב! אירוע חדש נוסף
-          </Alert>
-        </Snackbar>
-      </ReactMapGL>
-      {
-        selectedFeatureIndex !== null && selectedFeatureIndex >= 0 ? 
-        <ControlPanel deletePoly={onDelete} poly={selectedFeature} /> 
-        :
-        null
-      }
-    </div>
+          <Grid item md={2} >
+            {ddrawer} 
+          </Grid>
+          <Grid item md={10}>
+            <ReactMapGL mapboxApiAccessToken="pk.eyJ1Ijoicm95dmFyZGk0IiwiYSI6ImNraWRqYWVvYzA1dmgyc282YTg0aW16NGkifQ.7jEGmT-pezL7_nbkY186Dw"
+                        mapStyle='mapbox://styles/mapbox/satellite-streets-v11'      
+                        onViewportChange={setMapViewport} 
+                        {...mapViewport}
+            >
+              <Editor
+                  ref={editorRef}
+                  style={{width: '100%', height: '100%'}}
+                  clickRadius={12}
+                  mode={mode}
+                  onSelect={onSelect}
+                  onUpdate={onUpdate}
+                  editHandleShape={'circle'}
+                  featureStyle={getFeatureStyle}
+                  editHandleStyle={getEditHandleStyle}
+              />
+              {drawTools}
+              <Markers id="markers" markers={markers}/>
+              <Snackbar anchorOrigin={{vertical: "top", horizontal: "center"}} open={isNewFeature} autoHideDuration={3000} onClose={handleCloseAlert}>
+                <Alert onClose={handleCloseAlert} severity="error">
+                  שים לב! אירוע חדש נוסף
+                </Alert>
+              </Snackbar>
+            </ReactMapGL>
+            {
+              selectedFeatureIndex !== null && selectedFeatureIndex >= 0 ? 
+              <ControlPanel deletePoly={onDelete} poly={selectedFeature} /> 
+              :
+              null
+            }
+          </Grid>
+      </Grid>
   )
 }
 
