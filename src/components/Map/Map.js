@@ -1,7 +1,8 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react'
 import Markers from '../Marker'
 import Alert from '../Alert/Alert'
-import Drawer from '../Drawer'
+import EventsDrawer from '../Drawer'
+import InfoDrawer from '../InfoDrawer'
 import ReactMapGL, {FlyToInterpolator} from "react-map-gl"
 import SpeedDial from '../../components/SpeedDial'
 import Snackbar from '@material-ui/core/Snackbar'
@@ -21,6 +22,7 @@ const Map = () => {
     const [isSpeedDialOpen, setIsSpeedDialOpen] = useState(false)
     const [mode, setMode] = useState(null)
     const [selectedFeatureIndex, setSelectedFeatureIndex] = useState(null)
+    const [selectedMarker, setSelectedMarker] = useState(null)
     const editorRef = useRef(null)
 
     const [mapViewport, setMapViewport] = useState({
@@ -55,6 +57,7 @@ const Map = () => {
         const getData = async () => {
           const data = await ServerAPI.getAllMarkers()
           setMarkers(prevMarkers => [...prevMarkers, ...data])
+          // editorRef.current.addFeatures(dataLayers)
           const dataLayers = await ServerAPI.getAllLayers()
           editorRef.current.addFeatures(dataLayers)
         }
@@ -84,8 +87,12 @@ const Map = () => {
       setIsNewFeature(false)
     }
 
+    const onChooseMarker = (selectedMarker) => {
+      setSelectedMarker(selectedMarker)
+    }
+
     const onSelect = (options) => {
-      if (mode.constructor.name === "DrawPointMode") return   
+      if (mode.constructor.name === "DrawPointMode") return 
       setSelectedFeatureIndex(options && options.selectedFeatureIndex) 
     }
 
@@ -136,7 +143,7 @@ const Map = () => {
                  setIsSpeedDialOpen={(isOpen) => setIsSpeedDialOpen(isOpen)}
                  handleChangeAction={handleChangeAction}/>
     )
-
+    
     const features = editorRef.current && editorRef.current.getFeatures()
     const selectedFeature =
       features && (features[selectedFeatureIndex] || features[features.length - 1])
@@ -147,8 +154,10 @@ const Map = () => {
             justify="flex-start"
             alignItems="flex-start"
       >
+          <InfoDrawer isOpen={selectedMarker !== null && selectedMarker >= 0}
+                      closeDrawer={() => onChooseMarker(null)}/>
           <Grid item md={2} >
-            <Drawer moveToEvent={moveToEvent} markers={markers}/> 
+            <EventsDrawer moveToEvent={moveToEvent} markers={markers}/> 
           </Grid>
           <Grid item md={10}>
             <ReactMapGL mapboxApiAccessToken="pk.eyJ1Ijoicm95dmFyZGk0IiwiYSI6ImNraWRqYWVvYzA1dmgyc282YTg0aW16NGkifQ.7jEGmT-pezL7_nbkY186Dw"
@@ -168,7 +177,7 @@ const Map = () => {
                   editHandleStyle={getEditHandleStyle}
               />
               {drawTools}
-              <Markers id="markers" markers={markers}/>
+              <Markers onChooseMarker={onChooseMarker} id="markers" markers={markers}/>
               <Snackbar anchorOrigin={{vertical: "top", horizontal: "center"}} open={isNewFeature} autoHideDuration={3000} onClose={handleCloseAlert}>
                 <Alert onClose={handleCloseAlert} severity="error">
                   שים לב! אירוע חדש נוסף

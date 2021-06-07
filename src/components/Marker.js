@@ -5,6 +5,7 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import Card from '@material-ui/core/Card'
 import CardHeader from '@material-ui/core/CardHeader'
+import InfoIcon from '@material-ui/icons/Info'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -15,11 +16,21 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-const Markers = ({markers}) => {
+const Markers = ({markers, onChooseMarker}) => {
     const classes = useStyles()
     const [markerIdPopup, setMarkerIdPopup] = useState()
 
-    const handleClose = () => setMarkerIdPopup(null)
+    const handleClose = () => {
+      setMarkerIdPopup(null)
+      onChooseMarker(null)
+    }
+
+    const handleMarkerClicked = (index) => {
+      setMarkerIdPopup(index)
+      // onChooseMarker(index)
+    }
+
+    const moreInfo = (index) => onChooseMarker(index)
     
     const pinStyleGuns = {
       fill: '#d00',
@@ -41,15 +52,9 @@ const Markers = ({markers}) => {
                         latitude={marker.lngLat[1]}
                         longitude={marker.lngLat[0]}
                     >
-                      <svg onClick={() => setMarkerIdPopup(index)} height={20} viewBox="0 0 24 24" style={marker.type === "Guns" ? pinStyleGuns : pinStyleDrugs}>
+                      <svg onClick={() => handleMarkerClicked(index)} height={20} viewBox="0 0 24 24" style={marker.type === "Guns" ? pinStyleGuns : pinStyleDrugs}>
                         <path d={ICON} />
                       </svg>
-                      {/* <MarkerIcon  style={{ color: "green" }}/> */}
-                        {/* <img 
-                            src={marker.type === "Guns" ? "https://img.icons8.com/color/48/000000/marker.png" : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOv4nhjHu-MeGF8HtqmCbY0suKjAyFqIiZPg&usqp=CAU"}
-                            alt="marker"
-                            onClick={() => setMarkerIdPopup(index)}
-                        /> */}
                     </Marker>
                     {   markerIdPopup === index ?
                         <Popup
@@ -62,9 +67,14 @@ const Markers = ({markers}) => {
                           <Card elevation={6} className={classes.root}>
                             <CardHeader
                               action={
-                                <IconButton onClick={handleClose} aria-label="settings">
-                                  <CloseIcon/>
-                                </IconButton>
+                                <div>
+                                  <IconButton onClick={handleClose}>
+                                    <CloseIcon/>
+                                  </IconButton>
+                                  <IconButton onClick={() => moreInfo(index)}>
+                                    <InfoIcon/>
+                                  </IconButton>
+                                </div>
                               }
                               subheader={marker.type}
                             />
