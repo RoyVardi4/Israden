@@ -1,9 +1,10 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react'
 import Markers from '../Marker'
+import Alert from '../Alert/Alert'
+import Drawer from '../Drawer'
 import ReactMapGL, {FlyToInterpolator} from "react-map-gl"
 import SpeedDial from '../../components/SpeedDial'
 import Snackbar from '@material-ui/core/Snackbar'
-import Alert from '../Alert/Alert'
 import Grid from '@material-ui/core/Grid'
 
 import {Editor, DrawPolygonMode, EditingMode, DrawPointMode} from 'react-map-gl-draw'
@@ -13,15 +14,6 @@ import ControlPanel from '../ControlPanel/controlPanel'
 import ServerAPI from '../../ServerAPI'
 
 import './Map.css'
-
-import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText'
-import ListSubheader from '@material-ui/core/ListSubheader';
-import {GiPistolGun, GiMedicines} from 'react-icons/gi'
 
 const Map = () => {
     const [markers, setMarkers] = useState([])
@@ -149,30 +141,6 @@ const Map = () => {
     const selectedFeature =
       features && (features[selectedFeatureIndex] || features[features.length - 1])
 
-      const ddrawer = (
-        <Drawer
-          variant="permanent"
-        >
-          <Divider />
-          <List subheader={<ListSubheader>Last events</ListSubheader>}>
-            {markers.map((marker, index) => (
-              <ListItem button onClick={() => moveToEvent(marker.lngLat)} key={index}>
-                <ListItemIcon>{marker.type === "Guns" ? 
-                              <GiPistolGun size={25}/> : 
-                              <GiMedicines size={25}/>}
-                </ListItemIcon>
-                <ListItemText 
-                  primary={marker.type} 
-                  secondary={`${new Date(marker.date).toLocaleDateString("he-IL")}
-                              ${new Date(marker.date).toLocaleTimeString("he-IL")}`}
-                />
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-        </Drawer>
-      )
-
   return (
       <Grid container
             direction="row"
@@ -180,7 +148,7 @@ const Map = () => {
             alignItems="flex-start"
       >
           <Grid item md={2} >
-            {ddrawer} 
+            <Drawer moveToEvent={moveToEvent} markers={markers}/> 
           </Grid>
           <Grid item md={10}>
             <ReactMapGL mapboxApiAccessToken="pk.eyJ1Ijoicm95dmFyZGk0IiwiYSI6ImNraWRqYWVvYzA1dmgyc282YTg0aW16NGkifQ.7jEGmT-pezL7_nbkY186Dw"
