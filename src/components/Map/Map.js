@@ -26,7 +26,7 @@ const Map = () => {
     const editorRef = useRef(null)
 
     const [mapViewport, setMapViewport] = useState({
-      height: "100vh",
+      height: "87vh",
       width: "100wh",
       longitude: 34.798983937307526, 
       latitude: 31.99309730831267,
@@ -133,6 +133,7 @@ const Map = () => {
         latitude: lat,
         zoom: 14,
         maxZoom: 18,
+        minZoom: 5,
         transitionInterpolator: new FlyToInterpolator({speed: 1.2}),
         transitionDuration: 'auto'
       })
@@ -156,10 +157,10 @@ const Map = () => {
       >
           <InfoDrawer isOpen={selectedMarker !== null && selectedMarker >= 0}
                       closeDrawer={() => onChooseMarker(null)}/>
-          <Grid item md={2} >
+          <Grid item xs={false} md={2}>
             <EventsDrawer moveToEvent={moveToEvent} markers={markers}/> 
           </Grid>
-          <Grid item md={10}>
+          <Grid item xs={12} md={10}>
             <ReactMapGL mapboxApiAccessToken="pk.eyJ1Ijoicm95dmFyZGk0IiwiYSI6ImNraWRqYWVvYzA1dmgyc282YTg0aW16NGkifQ.7jEGmT-pezL7_nbkY186Dw"
                         mapStyle='mapbox://styles/mapbox/satellite-streets-v11'      
                         onViewportChange={setMapViewport} 

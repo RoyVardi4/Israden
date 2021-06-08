@@ -5,13 +5,14 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import Card from '@material-ui/core/Card'
 import CardHeader from '@material-ui/core/CardHeader'
+import CardActions from '@material-ui/core/CardActions'
 import InfoIcon from '@material-ui/icons/Info'
 
 const useStyles = makeStyles(() => ({
   root: {
     // backgroundcolor: "red",
-    position: "relative",
-    maxWidth: 1000,
+    // position: "relative",
+    // maxWidth: 1000,
     // maxHeight: 100
   },
 }))
@@ -64,20 +65,23 @@ const Markers = ({markers, onChooseMarker}) => {
                             latitude={marker.lngLat[1]}
                             longitude={marker.lngLat[0]}
                         >
-                          <Card elevation={6} className={classes.root}>
+                          <Card elevation={0} className={classes.root}>
                             <CardHeader
                               action={
                                 <div>
                                   <IconButton onClick={handleClose}>
                                     <CloseIcon/>
                                   </IconButton>
-                                  <IconButton onClick={() => moreInfo(index)}>
-                                    <InfoIcon/>
-                                  </IconButton>
+                                  
                                 </div>
                               }
                               subheader={marker.type}
                             />
+                            <CardActions disableSpacing>
+                              <IconButton onClick={() => moreInfo(index)}>
+                                <InfoIcon/>
+                              </IconButton>
+                            </CardActions>
                           </Card>
                         </Popup> :
                         null
