@@ -127,7 +127,7 @@ const Map = () => {
     const moveToEvent = (lngLat) => {
       const [lng, lat] = lngLat
       setMapViewport({
-        height: "100vh",
+        height: "87vh",
         width: "100wh",
         longitude: lng, 
         latitude: lat,
@@ -157,10 +157,10 @@ const Map = () => {
       >
           <InfoDrawer isOpen={selectedMarker !== null && selectedMarker >= 0}
                       closeDrawer={() => onChooseMarker(null)}/>
-          <Grid item xs={false} md={2}>
+          <Grid item xs={1} md={2}>
             <EventsDrawer moveToEvent={moveToEvent} markers={markers}/> 
           </Grid>
-          <Grid item xs={12} md={10}>
+          <Grid item xs={11} md={10}>
             <ReactMapGL mapboxApiAccessToken="pk.eyJ1Ijoicm95dmFyZGk0IiwiYSI6ImNraWRqYWVvYzA1dmgyc282YTg0aW16NGkifQ.7jEGmT-pezL7_nbkY186Dw"
                         mapStyle='mapbox://styles/mapbox/satellite-streets-v11'      
                         onViewportChange={setMapViewport} 
