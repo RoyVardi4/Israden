@@ -21,15 +21,15 @@ const CustomDrawer = ({markers, moveToEvent}) => {
     const classes = useStyles()
     return (
       <Paper style={{maxHeight: "87vh", backgroundColor:"#F5F5F5", overflow: 'auto'}}>
-        <List subheader={<ListSubheader style={{backgroundColor: "#173F5F", color: "white"}}>
+        <List subheader={<ListSubheader style={{backgroundColor: "#d62828", color: "white"}}>
                             Last 24 hours events
                          </ListSubheader>}
         >
           {markers.map((marker, index) => (
-            <Card elevation={5} className={classes.card}>
+            <Card elevation={5} className={classes.card} key={index}>
               <ListItem button 
                         onClick={() => moveToEvent(marker.lngLat)}
-                        key={index}>
+              >
                   <ListItemIcon>{marker.type === "Guns" ? 
                                 <GiPistolGun size={25}/> : 
                                 <GiMedicines size={25}/>}
