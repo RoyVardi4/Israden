@@ -42,7 +42,8 @@ const Map = () => {
     const [filterData, setFilterData] = useState({
       isOpen: false,
       isSubmitted: false,
-      type: "",
+      guns: false,
+      drugs: false,
       date: new Date()
     })
 
@@ -155,6 +156,13 @@ const Map = () => {
       })
     }
 
+    const filteredMarkers = () => {
+      return markers.filter(m => {
+        return (m.type === "Guns" && filterData.guns) ||
+               (m.type === "Drugs" && filterData.drugs)
+      })
+    }
+
     const drawTools = (
       <SpeedDial isSpeedDialOpen={isSpeedDialOpen} 
                  setIsSpeedDialOpen={(isOpen) => setIsSpeedDialOpen(isOpen)}
@@ -175,7 +183,9 @@ const Map = () => {
                       closeDrawer={() => onChooseMarker(null)}/>
           <Grid item xs={1} md={2}>
             <FilterDrawer filterData={filterData} onChangeFilterData={onChangeFilterData}/>
-            <EventsDrawer openFilter={() => onChangeFilterData({isOpen:true})} moveToEvent={moveToEvent} markers={markers}/> 
+            <EventsDrawer openFilter={() => onChangeFilterData({isOpen:true})} 
+                          moveToEvent={moveToEvent}
+                          markers={filteredMarkers()}/> 
           </Grid>
           <Grid item xs={11} md={10}>
             <ReactMapGL mapboxApiAccessToken="pk.eyJ1Ijoicm95dmFyZGk0IiwiYSI6ImNraWRqYWVvYzA1dmgyc282YTg0aW16NGkifQ.7jEGmT-pezL7_nbkY186Dw"
@@ -195,7 +205,7 @@ const Map = () => {
                   editHandleStyle={getEditHandleStyle}
               />
               {drawTools}
-              <Markers onChooseMarker={onChooseMarker} id="markers" markers={markers}/>
+              <Markers onChooseMarker={onChooseMarker} id="markers" markers={filteredMarkers()}/>
               <Snackbar anchorOrigin={{vertical: "top", horizontal: "center"}} open={isNewFeature} autoHideDuration={3000} onClose={handleCloseAlert}>
                 <Alert onClose={handleCloseAlert} severity="error">
                   שים לב! אירוע חדש נוסף

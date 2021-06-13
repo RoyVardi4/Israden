@@ -1,21 +1,54 @@
-import React from 'react'
-import Drawer from '@material-ui/core/Drawer';
+import React, {useState} from 'react'
+import Drawer from '@material-ui/core/Drawer'
+import { Checkbox } from '@material-ui/core'
+import FormGroup from '@material-ui/core/FormGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
 
 const FilterDrawer = ({filterData, onChangeFilterData}) => {
+
+    const [state, setState] = useState({
+        guns: false,
+        drugs: false
+    })
+    
+    const handleChange = (event) => {
+        setState({ ...state, [event.target.name]: event.target.checked });
+    }
 
     const toggleDrawer = (open) => (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
           return;
         }
 
-        onChangeFilterData({isOpen: false})
-
+        onChangeFilterData({
+            isOpen: false,
+            guns: guns,
+            drugs: drugs
+        })
     }
+
+    const {guns, drugs} = state
+
     return (
         <Drawer anchor='left' open={filterData.isOpen} onClose={toggleDrawer(false)}>
-            <h4 style={{marginTop: "30px", marginLeft: "20px", marginRight: "20px"}}>
-                This is a Filter Component
-            </h4>
+            <div style={{margin: "20px"}}>
+                <h4>
+                    This is a Filter Component
+                </h4>
+                <FormGroup>
+                    <FormControlLabel
+                        control={<Checkbox checked={guns} onChange={handleChange} name="guns"/>}
+                        label="Guns"
+                    />
+                    <FormControlLabel
+                        control={<Checkbox checked={drugs} onChange={handleChange} name="drugs"/>}
+                        label="Drugs"
+                    />
+                </FormGroup>
+            </div>
+            
+            
+
         </Drawer>
     )
 }
