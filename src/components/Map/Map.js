@@ -3,6 +3,7 @@ import Markers from '../Marker'
 import Alert from '../Alert/Alert'
 import EventsDrawer from '../Drawer'
 import InfoDrawer from '../InfoDrawer'
+import FilterDrawer from '../FilterFeatures'
 import ReactMapGL, {FlyToInterpolator} from "react-map-gl"
 import SpeedDial from '../../components/SpeedDial'
 import Snackbar from '@material-ui/core/Snackbar'
@@ -38,6 +39,12 @@ const Map = () => {
     const [isNewFeature, setIsNewFeature] = useState(false)
     const [isMeAddedFeature, setIsMeAddedFeature] = useState(false)
     const [listening, setListening] = useState(false)
+    const [filterData, setFilterData] = useState({
+      isOpen: false,
+      isSubmitted: false,
+      type: "",
+      date: new Date()
+    })
 
     useEffect(() => {
       if (!listening) {
@@ -139,6 +146,15 @@ const Map = () => {
       })
     }
 
+    const onChangeFilterData = (data) => {
+      setFilterData(prevData => {
+        return {
+          ...prevData,
+          ...data 
+        }
+      })
+    }
+
     const drawTools = (
       <SpeedDial isSpeedDialOpen={isSpeedDialOpen} 
                  setIsSpeedDialOpen={(isOpen) => setIsSpeedDialOpen(isOpen)}
@@ -158,7 +174,8 @@ const Map = () => {
           <InfoDrawer isOpen={selectedMarker !== null && selectedMarker >= 0}
                       closeDrawer={() => onChooseMarker(null)}/>
           <Grid item xs={1} md={2}>
-            <EventsDrawer moveToEvent={moveToEvent} markers={markers}/> 
+            <FilterDrawer filterData={filterData} onChangeFilterData={onChangeFilterData}/>
+            <EventsDrawer openFilter={() => onChangeFilterData({isOpen:true})} moveToEvent={moveToEvent} markers={markers}/> 
           </Grid>
           <Grid item xs={11} md={10}>
             <ReactMapGL mapboxApiAccessToken="pk.eyJ1Ijoicm95dmFyZGk0IiwiYSI6ImNraWRqYWVvYzA1dmgyc282YTg0aW16NGkifQ.7jEGmT-pezL7_nbkY186Dw"

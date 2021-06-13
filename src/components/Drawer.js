@@ -8,6 +8,7 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import {GiPistolGun, GiMedicines} from 'react-icons/gi'
 import { makeStyles } from '@material-ui/core/styles'
 import { Card, Paper } from '@material-ui/core';
+import {ImFilter} from 'react-icons/im'
 
 const useStyles = makeStyles(() => ({
   card: {
@@ -17,13 +18,14 @@ const useStyles = makeStyles(() => ({
   } 
 }))
 
-const CustomDrawer = ({markers, moveToEvent}) => {
+const CustomDrawer = ({markers, moveToEvent, openFilter}) => {
     const classes = useStyles()
     return (
       <Paper style={{maxHeight: "87vh", backgroundColor:"#F5F5F5", overflow: 'auto'}}>
-        <List subheader={<ListSubheader style={{backgroundColor: "#d62828", color: "white"}}>
+        <List subheader={<div><ListSubheader style={{backgroundColor: "#d62828", color: "white"}}>
                             Last 24 hours events
-                         </ListSubheader>}
+                         </ListSubheader>
+                         <ImFilter onClick={openFilter}/></div>}
         >
           {markers.map((marker, index) => (
             <Card elevation={5} className={classes.card} key={index}>
