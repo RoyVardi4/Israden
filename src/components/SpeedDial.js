@@ -13,8 +13,11 @@ const useStyles = makeStyles((theme) => ({
     top: theme.spacing(4),
     right: theme.spacing(4),
   },
+  rootAction: {
+    color: theme.palette.secondary.light
+  },
   action: {
-    // backgroundColor: "red"
+    backgroundColor: theme.palette.natural
   }
 }))
 
@@ -38,21 +41,24 @@ export default function OpenIconSpeedDial({handleChangeAction, isSpeedDialOpen, 
   ]
   const handleOpen = () => {
     setOpen(true);
-  };
+  }
 
   const handleClose = () => {
     setOpen(false);
-  };
+  }
 
   return (
       <SpeedDial
         ariaLabel="Event SpeedDial"
         className={classes.speedDial}
-        icon={<SpeedDialIcon />}
+        icon={<SpeedDialIcon/>}
         onClose={handleClose}
         onOpen={handleOpen}
         open={open}
         direction="down"
+        FabProps={{
+          color: "secondary"
+        }}
       >
         {actions.map((action) => (
           <SpeedDialAction

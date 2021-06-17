@@ -7,8 +7,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel'
 const FilterDrawer = ({filterData, onChangeFilterData}) => {
 
     const [state, setState] = useState({
-        guns: false,
-        drugs: false
+        guns: filterData.guns,
+        drugs: filterData.drugs
     })
     
     const handleChange = (event) => {

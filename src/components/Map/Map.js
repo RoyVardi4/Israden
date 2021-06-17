@@ -42,8 +42,8 @@ const Map = () => {
     const [filterData, setFilterData] = useState({
       isOpen: false,
       isSubmitted: false,
-      guns: false,
-      drugs: false,
+      guns: true,
+      drugs: true,
       date: new Date()
     })
 
